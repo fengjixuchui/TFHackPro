@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CTFHackProDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CTFHackProDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CTFHackProDlg::OnBnClickedButton2)
+	ON_BN_CLICKED(IDC_BUTTON3, &CTFHackProDlg::OnBnClickedButton3)
 END_MESSAGE_MAP()
 
 
@@ -196,11 +197,54 @@ UINT LockAmmo(LPVOID lpParam)
 		}
 		Sleep(50);
 	}
-	//CloseHandle(hProcess);
+	CloseHandle(hProcess);
+	return FALSE;
+}
+
+UINT AddAmmo(LPVOID lpParam)
+{
+	//AfxMessageBox(L"进入函数");
+	DWORD dwPid = GetProcessPid(L"SFGame.exe");
+	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
+	//CString str;
+	if (hProcess == INVALID_HANDLE_VALUE)
+	{
+		//str.Format(L"%d", GetLastError());
+		//AfxMessageBox(str);
+		return 0;
+	}
+	DWORD dwBaseAddress = GetProcessModuleBaseAddress(dwPid, (WCHAR*)L"SFGame.exe");
+	DWORD dwTempAddress = 0;
+	DWORD dwAmmo = 99999;
+	DWORD dwTemp = 0;
+	DWORD dwRetNum = 0;
+	BOOL bFlag = FALSE;
+	if (dwBaseAddress == 0) {
+	//AfxMessageBox(L"开启失败");
+	return FALSE;
+	}
+	ReadProcessMemory(hProcess, (LPVOID)((DWORD)(dwBaseAddress + 0x013ED5C4)), &dwTempAddress, 4, &dwRetNum);
+	if (dwTempAddress == 0) {
+	//AfxMessageBox(L"开启失败");
+	return FALSE;
+	}
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x228), &dwTempAddress, 4, &dwRetNum);
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x40C), &dwTempAddress, 4, &dwRetNum);
+	ReadProcessMemory(hProcess, (LPVOID)(dwTempAddress + 0x358), &dwTemp, 4, &dwRetNum);
+	if (dwTemp > 0 || dwTemp < 1000)
+	{
+		WriteProcessMemory(hProcess, (LPVOID)(dwTempAddress + 0x378), &dwAmmo, 4, NULL);
+		WriteProcessMemory(hProcess, (LPVOID)(dwTempAddress + 0x358), &dwAmmo, 4, NULL);
+		CloseHandle(hProcess);
+		return TRUE;
+	}
+	Sleep(50);
+	CloseHandle(hProcess);
 	return FALSE;
 }
 
 CWinThread* MyThread1;
+CWinThread* MyThread2;
 
 void CTFHackProDlg::OnBnClickedButton1()
 {
@@ -219,7 +263,7 @@ void CTFHackProDlg::OnBnClickedButton2()
 	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(TRUE);
 	TCHAR exeFullPath[260];
-	const WCHAR* dllName = L"SpeedHackDLL_2.dll";
+	const WCHAR* dllName = L"SpeedHack.dll";
 	GetModuleFileName(NULL, exeFullPath, MAX_PATH);
 	for (int i = wcslen(exeFullPath); i > 0; i--)
 	{
@@ -232,5 +276,14 @@ void CTFHackProDlg::OnBnClickedButton2()
 	if (RemoteThreadDllInject(L"SFGame.exe", exeFullPath))
 		AfxMessageBox(L"注入成功");
 
+	UpdateData(FALSE);
+}
+
+
+void CTFHackProDlg::OnBnClickedButton3()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	UpdateData(TRUE);
+	MyThread2 = AfxBeginThread(AddAmmo, NULL);
 	UpdateData(FALSE);
 }
