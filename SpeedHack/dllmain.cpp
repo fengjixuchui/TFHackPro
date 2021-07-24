@@ -8,12 +8,8 @@
 
 DWORD WINAPI MainThread(LPVOID lpParam)
 {
-	//Hook
 	Speedhack::Setup();
-	//MessageBox(NULL,L"开启成功",L"ROOT",NULL);
-	//Set Speed
 	Speedhack::SetSpeed(3);
-	//UnHook
 	//Speedhack::Detach();
 	return 0;
 }
