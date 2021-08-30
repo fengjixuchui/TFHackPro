@@ -1,7 +1,7 @@
 ﻿#include "Windows.h"
 #include "speedhack.h"
 #include "psapi.h"
-//#include"stdio.h"
+#include "stdio.h"
 
 #define KEYDOWN(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 1 : 0)
 #define KEYUP(vk_code) ((GetAsyncKeyState(vk_code) & 0x8000) ? 0 : 1)
@@ -26,36 +26,53 @@ BOOL CheckDLL()
 DWORD WINAPI MainThread(LPVOID lpParam)
 {
 	Speedhack::Setup();
-	while (1)
+	//Speedhack::SetSpeed(3);
+
+	//AllocConsole();
+	//SetConsoleTitle(L"TFHackDLL");
+	//FILE* stream;
+	//freopen_s(&stream,"CON","w",stdout);
+	//printf("ok\n");
+
+	BOOL 加速 = FALSE;
+	BOOL 三倍速 = FALSE;
+
+	while (TRUE)
 	{
-		if (GetKeyState(VK_HOME & 1))
+		//切换加速状态
+		//if (GetAsyncKeyState(VK_NUMPAD1) != 0)
+		if((GetKeyState(VK_NUMPAD1) & 0x8000) != 0)
 		{
-			if (GetKeyState(0x45) < 0)
+			if (加速)
 			{
-				Speedhack::SetSpeed(40);
-				Sleep(10);
+				加速 = FALSE;
+				Sleep(500);
 			}
-			Speedhack::SetSpeed(1);
-			Sleep(100);
+			else
+			{
+				加速 = TRUE;
+				Sleep(500);
+			}
 		}
-		else if (GetKeyState(VK_NUMPAD2 & 1))
+		if (加速 != 三倍速)
 		{
-			Speedhack::SetSpeed(1.5);
-			Sleep(10);
-		}
-		else if (GetKeyState(VK_NUMPAD3 & 1))
-		{
-			Speedhack::SetSpeed(3);
-			Sleep(10);
-		}
-		else if (GetKeyState(VK_NUMPAD4 & 1))
-		{
-			Speedhack::SetSpeed(15);
-			Sleep(10);
+			if (加速 == TRUE)
+			{
+				//Speedhack::Setup();
+				Speedhack::SetSpeed(3);
+				//printf("Speedhack::SetSpeed(3)\n");
+			}
+			else
+			{
+				Speedhack::SetSpeed(1);
+				//Speedhack::Detach();
+				//printf("Speedhack::SetSpeed(1)\n");
+			}
+			三倍速 = 加速;
 		}
 	}
 	//Speedhack::SetSpeed(3);
-	Speedhack::Detach();
+	//Speedhack::Detach();
 	return 0;
 }
 

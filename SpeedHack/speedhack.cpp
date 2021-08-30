@@ -89,7 +89,6 @@ namespace Speedhack
 			_GTC64_BaseTime = _hGetTickCount64();
 			_hQueryPerformanceCounter(&_QPC_BaseTime);
 		}
-
 		speed = relSpeed;
 	}
 }

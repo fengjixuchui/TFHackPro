@@ -7,7 +7,7 @@
 
 
 BOOL GetWndPid(LPCWSTR lpClassName, LPCWSTR lpWindowName, DWORD& dwPid);
-DWORD GetProcessPid(const WCHAR ProcessName[MAX_PATH]);
+DWORD GetProcessIdByProcessName(const WCHAR ProcessName[MAX_PATH]);
 DWORD GetProcessModuleBaseAddress(DWORD dwPid, const WCHAR ModuleName[MAX_MODULE_NAME32 + 1]);
 BOOL RemoteThreadDllInject(const WCHAR*, const WCHAR*);
 BOOL FetchProcess();
@@ -37,7 +37,7 @@ BOOL MyLoadLibrary(const WCHAR DllName[MAX_PATH])
 BOOL RemoteThreadDllInject(const WCHAR* ProcessName, const WCHAR* dllpath)
 {
 	//LPCWSTR dllpath = L"C:\\Users\\Administrator\\Desktop\\TFHack.dll";
-	DWORD dwPid = GetProcessPid(ProcessName);
+	DWORD dwPid = GetProcessIdByProcessName(ProcessName);
 	printf("%d\n", dwPid);
 	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
 	if (hProcess == NULL)
@@ -72,7 +72,7 @@ BOOL RemoteThreadDllFree(const WCHAR* ProcessName, const WCHAR* dllName)
 {
 	//LPCWSTR dllpath = L"C:\\Users\\Administrator\\Desktop\\TFHack.dll";
 	RemoteThreadDllInject(ProcessName, GetFileFullPath(dllName));
-	DWORD dwPid = GetProcessPid(ProcessName);
+	DWORD dwPid = GetProcessIdByProcessName(ProcessName);
 	//CString str;
 	//str.Format(L"%d", dwPid);
 	//MessageBox(0,str,L"PID",0);
@@ -137,7 +137,7 @@ BOOL GetWndPid(LPCWSTR lpClassName, LPCWSTR lpWindowName, DWORD& dwPid)
 }
 
 
-DWORD GetProcessPid(const WCHAR ProcessName[MAX_PATH])
+DWORD GetProcessIdByProcessName(const WCHAR ProcessName[MAX_PATH])
 {
 	HANDLE hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
