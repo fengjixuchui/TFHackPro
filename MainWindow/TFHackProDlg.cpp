@@ -1,4 +1,4 @@
-﻿
+﻿#define PIE 3.141592653590
 // TFHackProDlg.cpp: 实现文件
 //
 
@@ -74,6 +74,7 @@ BEGIN_MESSAGE_MAP(CTFHackProDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON6, &CTFHackProDlg::OnBnClickedButton6)
 	ON_BN_CLICKED(IDC_BUTTON8, &CTFHackProDlg::OnBnClickedButton8)
 	ON_BN_CLICKED(IDC_BUTTON9, &CTFHackProDlg::OnBnClickedButton9)
+	ON_BN_CLICKED(IDC_BUTTON10, &CTFHackProDlg::OnBnClickedButton10)
 END_MESSAGE_MAP()
 
 
@@ -81,6 +82,8 @@ END_MESSAGE_MAP()
 
 BOOL CTFHackProDlg::OnInitDialog()
 {
+	//SetDebugConsole(L"Test");
+
 	CDialogEx::OnInitDialog();
 
 	// 将“关于...”菜单项添加到系统菜单中。
@@ -297,7 +300,13 @@ UINT ZeroRecoil(LPVOID lpParam)
 DWORD WIDTH;
 DWORD HEIGHT;
 
-struct Vec3 { float x, y, z; };
+//struct Vec3 { float x, y, z; };
+struct Vec3
+{
+	float x = 0;
+	float y = 0;
+	float z = 0;
+};
 struct Vec4 { float x, y, z, w; };
 struct Vec2 { float x, y; };
 
@@ -309,13 +318,11 @@ HBRUSH Brush = CreateSolidBrush(RGB(0, 255, 0));
 COLORREF TextCOLOR = RGB(255, 100, 255);
 float Matrix[16] = { 0 };
 
-BOOL GetPos(HANDLE hProcess, float pos[3], DWORD& dwHp, DWORD dwBaseAddress, DWORD i)
+BOOL GetPos(HANDLE hProcess, Vec3 *pos, DWORD *dwHp, DWORD dwBaseAddress, DWORD i)
 {
 	DWORD dwTempAddress = 0;
 	DWORD dwRetNum = 0;
 	float dwTemp = 0;
-	float tmp[3];
-
 	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x013ED5C4), &dwTempAddress, 4, &dwRetNum);
 	if (dwTempAddress == 0x013ED5C4)	return false;
 	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x168), &dwTempAddress, 4, &dwRetNum);
@@ -328,13 +335,9 @@ BOOL GetPos(HANDLE hProcess, float pos[3], DWORD& dwHp, DWORD dwBaseAddress, DWO
 	if (dwTempAddress == 0x560)	return false;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x0 + 0x10 * i), &dwTempAddress, 4, &dwRetNum);
 	if (dwTempAddress == 0x10 * i)	return false;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C - 0x8), &tmp, 12, &dwRetNum);
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x54), pos, 0xC, &dwRetNum);
 
-	for (size_t i = 0; i < 3; i++)
-	{
-		pos[i] = tmp[i];
-	}
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C + 0x2DC), &dwHp, 12, &dwRetNum);
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C + 0x2DC), dwHp, 12, &dwRetNum);
 	return true;
 }
 DWORD GetpplNum(HANDLE hProcess, DWORD dwBaseAddress)
@@ -508,8 +511,7 @@ UINT ESPBox(LPVOID lpParam)
 
 	hDC = GetDC(hWnd);
 	Vec2 vScreen = { 0 };
-	Vec3 Pos = { 0 };
-	float tmp[3];
+	static Vec3 Pos = { 0 };
 
 	DWORD width = 25000;
 	DWORD height = width * ((float)WIDTH / HEIGHT) * 2.5;
@@ -522,29 +524,24 @@ UINT ESPBox(LPVOID lpParam)
 
 	double dwDis=0;
 
-	while (1)
+	while (TRUE)
 	{
 		DrawString(25, 0, RGB(255, 100, 255), "ROOT");
 		DrawString(WIDTH / 2 - 3, HEIGHT / 2 - 27, CenterCOLOR, "·");
 
 		for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr)*2; i++)
-		//for (size_t i = 0; i < 32; i++)
 		{
-			if (GetPos(hProcess, tmp, dwHp, dwBaseAddr, i))
+			if (GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i))
 			{
-				//system("cls");
-				//printf("ppl = %d\n", i);
+				//加Printf(),方框位置对
+				//printf("%f\t%f\t%f\n", Pos.x, Pos.y, Pos.z);
+
 				if (dwHp > 0 && dwHp < 101)
 				{
-					Pos.x = tmp[0];
-					Pos.y = tmp[1];
-					Pos.z = tmp[2];
-
 					GetMatrix(hProcess, dwBaseAddr);
 
 					if (WorldToScreen(Pos, vScreen, Matrix, WIDTH, HEIGHT))
 					{
-
 						ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTmp, 4, NULL);
 						ReadProcessMemory(hProcess, (LPCVOID)(dwTmp + 0x54), &MyPos, 12, NULL);
 
@@ -810,13 +807,119 @@ void CTFHackProDlg::OnBnClickedButton9()
 	if (g_bFlag8)
 	{
 		TerminateThread(hThread8, 0);
-		CloseHandle(hThread7);
+		CloseHandle(hThread8);
 		g_bFlag8 = FALSE;
 	}
 	else
 	{
 		hThread8 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LocalFly, NULL, 0, 0);
 		g_bFlag8 = TRUE;
+
+	}
+}
+
+
+
+UINT AimBot()
+{
+	SetDebugConsole(L"Test");
+
+	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
+	DWORD dwBaseAddr = GetProcessModuleBaseAddress(dwPid, L"SFGame.exe");
+	if (dwBaseAddr == FALSE)
+		return 0;
+	DWORD dwTmp = 0;
+	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
+	Sleep(50);
+	
+	DWORD dwHp = 0;
+	DWORD dwTemp = 0;
+	Vec3 Pos = { 0 };
+	Vec3 MyPos = { 0 };
+	Vec3 RePos = { 0 };
+	DWORD dwDis = 0;
+
+	double Pitch = 0;
+	double Yaw = 0;
+
+	DWORD GamePitch = 0;
+	DWORD GameYaw = 0;
+
+	DWORD TempPitch = 0;
+
+	while (TRUE)
+	{
+		if (GetKeyState(VK_MENU) & 0x8000 || GetKeyState(VK_LBUTTON) & 0x8000)
+		{
+			for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr) * 2; i++)
+			{
+				if (GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i))
+				{
+					if (dwHp > 0 && dwHp < 101)
+					{
+						ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C4), &dwTmp, 4, NULL);
+						//Get my Position
+						ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTemp, 4, NULL);
+						ReadProcessMemory(hProcess, (LPCVOID)(dwTemp + 0x54), &MyPos, 12, NULL);
+
+						RePos.x = Pos.x - MyPos.x;
+						RePos.y = Pos.y - MyPos.y;
+						RePos.z = Pos.z - MyPos.z;
+
+						Pitch = atan2(RePos.y, RePos.x) * 180.f / PIE;
+						double tmp1 = pow(RePos.x, 2) + pow(RePos.y, 2);
+						Yaw = -atan2(-RePos.z, sqrt(tmp1)) * 180.f / PIE;
+
+						ReadProcessMemory(hProcess, (LPVOID)(dwTmp + 0x64), &TempPitch, 4, NULL);
+						//printf("%d\n", TempPitch);
+						double tmp2 = TempPitch * 360 / 65536 - Pitch;
+						printf("%lf\n", tmp2);
+						//if (tmp2>15||tmp2<-15)
+						//{
+						//	continue;
+						//}
+						//if (tmp2 <2 || tmp2>-2)
+						//	continue;
+						if (Pitch < 0)
+							Pitch += 360;
+						if (Yaw < 0)
+							Yaw += 360;
+
+						//printf("%f\t%f\n", Pitch, Yaw);
+
+						GamePitch = (DWORD)(Pitch * 65536 / 360);
+						GameYaw = (DWORD)(Yaw * 65536 / 360);
+
+						//printf("%d\t%d\n", GamePitch, GameYaw);
+						if (GamePitch != 0 && GameYaw != 0)
+						{
+							WriteProcessMemory(hProcess, (LPVOID)(dwTmp + 0x64), &GamePitch, 4, NULL);
+							WriteProcessMemory(hProcess, (LPVOID)(dwTmp + 0x60), &GameYaw, 4, NULL);
+						}
+					}
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+BOOL g_bFlag9 = FALSE;
+HANDLE hThread9;
+
+void CTFHackProDlg::OnBnClickedButton10()
+{
+	
+	if (g_bFlag9)
+	{
+		TerminateThread(hThread9, 0);
+		CloseHandle(hThread9);
+		g_bFlag9 = FALSE;
+	}
+	else
+	{
+		hThread9 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AimBot, NULL, 0, 0);
+		g_bFlag9 = TRUE;
 
 	}
 }
