@@ -318,10 +318,12 @@ BOOL GetPos(HANDLE hProcess, float pos[3], DWORD& dwHp, DWORD dwBaseAddress, DWO
 
 	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x013ED5C4), &dwTempAddress, 4, &dwRetNum);
 	if (dwTempAddress == 0x013ED5C4)	return false;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x168), &dwTempAddress, 4, &dwRetNum);
+	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x168), &dwTempAddress, 4, &dwRetNum);
+	//if (dwTempAddress == 0x168)	return false;
+	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x4), &dwTempAddress, 4, &dwRetNum);
+	//if (dwTempAddress == 0x4)	return false;
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x448), &dwTempAddress, 4, &dwRetNum);
 	if (dwTempAddress == 0x168)	return false;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x4), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0x4)	return false;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x560), &dwTempAddress, 4, &dwRetNum);
 	if (dwTempAddress == 0x560)	return false;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x0 + 0x10 * i), &dwTempAddress, 4, &dwRetNum);
@@ -491,7 +493,7 @@ BOOL GetWindowRealSize(HWND hWnd)
 
 UINT ESPBox(LPVOID lpParam)
 {
-
+	//SetDebugConsole(L"ESPBox");
 	//BeginDraw();
 
 	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
@@ -516,7 +518,7 @@ UINT ESPBox(LPVOID lpParam)
 	DWORD dwHp = 0;
 
 	COLORREF CenterCOLOR = RGB(0, 255, 0);;
-	printf("%d\n", GetpplNum(hProcess, dwBaseAddr));
+	//printf("%d\n", GetpplNum(hProcess, dwBaseAddr));
 
 	double dwDis=0;
 
@@ -525,10 +527,13 @@ UINT ESPBox(LPVOID lpParam)
 		DrawString(25, 0, RGB(255, 100, 255), "ROOT");
 		DrawString(WIDTH / 2 - 3, HEIGHT / 2 - 27, CenterCOLOR, "·");
 
-		for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr); i++)
+		for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr)*2; i++)
+		//for (size_t i = 0; i < 32; i++)
 		{
 			if (GetPos(hProcess, tmp, dwHp, dwBaseAddr, i))
 			{
+				//system("cls");
+				//printf("ppl = %d\n", i);
 				if (dwHp > 0 && dwHp < 101)
 				{
 					Pos.x = tmp[0];

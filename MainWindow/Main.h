@@ -227,3 +227,12 @@ void DebugMsg(const WCHAR* a, int b,int c)
 	str.Format(a, b,c);
 	AfxMessageBox(str);
 }
+
+void SetDebugConsole(PCWSTR ConsoleName)
+{
+	AllocConsole();
+	SetConsoleTitle(ConsoleName);
+	FILE* stream;
+	freopen_s(&stream, "CON", "w", stdout);
+	printf("ok\n");
+}
