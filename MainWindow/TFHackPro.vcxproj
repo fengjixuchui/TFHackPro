@@ -99,6 +99,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <UACExecutionLevel>RequireAdministrator</UACExecutionLevel>
+      <UACUIAccess>false</UACUIAccess>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>

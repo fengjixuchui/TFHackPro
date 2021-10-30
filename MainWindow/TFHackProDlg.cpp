@@ -340,11 +340,31 @@ BOOL GetPos(HANDLE hProcess, Vec3 *pos, DWORD *dwHp, DWORD dwBaseAddress, DWORD 
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C + 0x2DC), dwHp, 12, &dwRetNum);
 	return true;
 }
+
+BOOL GetPosByList(HANDLE hProcess, Vec3* pos, DWORD* dwHp, DWORD dwBaseAddress, DWORD i)
+{
+	DWORD dwTempAddress = 0;
+	DWORD dwRetNum = 0;
+	float dwTemp = 0;
+	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x013ED5C4), &dwTempAddress, 4, &dwRetNum);
+	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x168), &dwTempAddress, 4, &dwRetNum);
+	//if (dwTempAddress == 0x168)	return false;
+	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x4), &dwTempAddress, 4, &dwRetNum);
+	//if (dwTempAddress == 0x4)	return false;
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x448), &dwTempAddress, 4, &dwRetNum);
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x560), &dwTempAddress, 4, &dwRetNum);
+
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x0 + 0x10 * i), &dwTempAddress, 4, &dwRetNum);
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x54), pos, 0xC, &dwRetNum);
+	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C + 0x2DC), dwHp, 12, &dwRetNum);
+	return true;
+}
+
 DWORD GetpplNum(HANDLE hProcess, DWORD dwBaseAddress)
 {
 	DWORD dwTempAddress = 0;
 	DWORD dwRetNum = 0;
-	DWORD dwTemp = 0;
+	static DWORD dwTemp = 0;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x1381C90), &dwTemp, 4, &dwRetNum);
 
 	return dwTemp;
@@ -437,13 +457,9 @@ BOOL GetMatrix(HANDLE hProcess, DWORD dwBaseAddress)
 	DWORD dwRetNum = 0;
 	DWORD dwTemp = 0;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x01393D74), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0x01393D74)	return false;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x50), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0x50)	return false;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0xF4), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0xF4)	return false;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0x5C)	return false;
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x24), &dwTempAddress, 4, &dwRetNum);
 	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x6A0), &Matrix, 64, &dwRetNum);
 
@@ -529,38 +545,114 @@ UINT ESPBox(LPVOID lpParam)
 		DrawString(25, 0, RGB(255, 100, 255), "ROOT");
 		DrawString(WIDTH / 2 - 3, HEIGHT / 2 - 27, CenterCOLOR, "·");
 
-		for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr)*2; i++)
+		for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr) * 2; i++)
 		{
-			if (GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i))
+			GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i);
+			if (!i)	continue;
+			//加Printf(),方框位置对
+			//printf("%f\t%f\t%f\n", Pos.x, Pos.y, Pos.z);
+
+			//if (dwHp < 1 && dwHp > 101)	break;
+
+
+			GetMatrix(hProcess, dwBaseAddr);
+
+			if (WorldToScreen(Pos, vScreen, Matrix, WIDTH, HEIGHT))
 			{
-				//加Printf(),方框位置对
-				//printf("%f\t%f\t%f\n", Pos.x, Pos.y, Pos.z);
+				ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTmp, 4, NULL);
+				ReadProcessMemory(hProcess, (LPCVOID)(dwTmp + 0x54), &MyPos, 12, NULL);
 
-				if (dwHp > 0 && dwHp < 101)
+				if (((DWORD)Pos.x != MyPos.x) && ((DWORD)Pos.y != MyPos.y))
 				{
-					GetMatrix(hProcess, dwBaseAddr);
-
-					if (WorldToScreen(Pos, vScreen, Matrix, WIDTH, HEIGHT))
+					dwDis = sqrt(pow(((double)MyPos.x - Pos.x), 2) + pow(((double)MyPos.y - Pos.y), 2) + pow(((double)MyPos.z - Pos.z), 2));
+					if (dwDis > 0)
 					{
-						ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTmp, 4, NULL);
-						ReadProcessMemory(hProcess, (LPCVOID)(dwTmp + 0x54), &MyPos, 12, NULL);
-
-						if (((DWORD)Pos.x != MyPos.x) && ((DWORD)Pos.y != MyPos.y))
+						char strHp[256] = { 0 };
+						sprintf_s(strHp, 256, "%d", dwHp);
+						DrawString(vScreen.x, vScreen.y, RGB(255, 0, 0), strHp);
+						DrawBorderBox(vScreen.x - (width * 0.5 / dwDis), vScreen.y - (height * 0.5 / dwDis), width / dwDis, height / dwDis, 1);
+						if (GetKeyState(VK_INSERT) & 1)
 						{
-							dwDis = sqrt(pow(((double)MyPos.x - Pos.x), 2) + pow(((double)MyPos.y - Pos.y), 2) + pow(((double)MyPos.z - Pos.z), 2));
-							if (dwDis > 0)
-							{
-								char strHp[256] = { 0 };
-								sprintf_s(strHp, 256, "%d", dwHp);
-								DrawString(vScreen.x, vScreen.y, RGB(255, 0, 0), strHp);
-								DrawBorderBox(vScreen.x - (width * 0.5 / dwDis), vScreen.y - (height * 0.5 / dwDis), width / dwDis, height / dwDis, 1);
-								if (GetKeyState(VK_INSERT) & 1)
-								{
-									DrawLine(vScreen.x, vScreen.y);
-								}
-							}
+							DrawLine(vScreen.x, vScreen.y);
 						}
+
 					}
+
+				}
+			}
+		}
+	}
+	return 0;
+}
+
+UINT ESPBox(LPVOID lpParam)
+{
+	//SetDebugConsole(L"ESPBox");
+	//BeginDraw();
+
+	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
+	DWORD dwBaseAddr = GetProcessModuleBaseAddress(dwPid, L"SFGame.exe");
+	if (dwBaseAddr == FALSE)
+		return 0;
+	DWORD dwTmp;
+	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
+	HWND hWnd = FindWindow(NULL, L"风暴战区TF");
+	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GetWindowRealSize, hWnd, 0, 0);
+	Sleep(50);
+
+	hDC = GetDC(hWnd);
+	Vec2 vScreen = { 0 };
+	static Vec3 Pos = { 0 };
+
+	DWORD width = 25000;
+	DWORD height = width * ((float)WIDTH / HEIGHT) * 2.5;
+
+	Vec3 MyPos = { 0 };
+	DWORD dwHp = 0;
+
+	COLORREF CenterCOLOR = RGB(0, 255, 0);;
+	//printf("%d\n", GetpplNum(hProcess, dwBaseAddr));
+
+	double dwDis = 0;
+
+	while (TRUE)
+	{
+		DrawString(25, 0, RGB(255, 100, 255), "ROOT");
+		DrawString(WIDTH / 2 - 3, HEIGHT / 2 - 27, CenterCOLOR, "·");
+
+		for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr) * 2; i++)
+		{
+			GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i);
+			if (!i)	continue;
+			//加Printf(),方框位置对
+			//printf("%f\t%f\t%f\n", Pos.x, Pos.y, Pos.z);
+
+			//if (dwHp < 1 && dwHp > 101)	break;
+
+
+			GetMatrix(hProcess, dwBaseAddr);
+
+			if (WorldToScreen(Pos, vScreen, Matrix, WIDTH, HEIGHT))
+			{
+				ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTmp, 4, NULL);
+				ReadProcessMemory(hProcess, (LPCVOID)(dwTmp + 0x54), &MyPos, 12, NULL);
+
+				if (((DWORD)Pos.x != MyPos.x) && ((DWORD)Pos.y != MyPos.y))
+				{
+					dwDis = sqrt(pow(((double)MyPos.x - Pos.x), 2) + pow(((double)MyPos.y - Pos.y), 2) + pow(((double)MyPos.z - Pos.z), 2));
+					if (dwDis > 0)
+					{
+						char strHp[256] = { 0 };
+						sprintf_s(strHp, 256, "%d", dwHp);
+						DrawString(vScreen.x, vScreen.y, RGB(255, 0, 0), strHp);
+						DrawBorderBox(vScreen.x - (width * 0.5 / dwDis), vScreen.y - (height * 0.5 / dwDis), width / dwDis, height / dwDis, 1);
+						if (GetKeyState(VK_INSERT) & 1)
+						{
+							DrawLine(vScreen.x, vScreen.y);
+						}
+
+					}
+
 				}
 			}
 		}
@@ -837,15 +929,15 @@ UINT AimBot()
 	Vec3 Pos = { 0 };
 	Vec3 MyPos = { 0 };
 	Vec3 RePos = { 0 };
-	DWORD dwDis = 0;
+	int dwDis = 0;
 
 	double Pitch = 0;
 	double Yaw = 0;
 
-	DWORD GamePitch = 0;
-	DWORD GameYaw = 0;
+	int GamePitch = 0;
+	int GameYaw = 0;
 
-	DWORD TempPitch = 0;
+	int TempPitch = 0;
 
 	while (TRUE)
 	{
@@ -853,50 +945,65 @@ UINT AimBot()
 		{
 			for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr) * 2; i++)
 			{
-				if (GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i))
+				GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i);
+				if (!i)	continue;
+				if (dwHp < 1 && dwHp > 101)	break;
+				ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C4), &dwTmp, 4, NULL);
+				//Get my Position
+				ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTemp, 4, NULL);
+				ReadProcessMemory(hProcess, (LPCVOID)(dwTemp + 0x54), &MyPos, 12, NULL);
+
+				RePos.x = Pos.x - MyPos.x;
+				RePos.y = Pos.y - MyPos.y;
+				RePos.z = Pos.z - MyPos.z;
+
+				Pitch = atan2(RePos.y, RePos.x) * 180.f / PIE;
+				double tmp1 = pow(RePos.x, 2) + pow(RePos.y, 2);
+				Yaw = -atan2(-RePos.z, sqrt(tmp1)) * 180.f / PIE;
+
+				//if (Pitch < 0.1)	continue;
+				//if (Yaw < 0.1)	continue;
+				//double tmp2 = TempPitch * 360 / 65536 - Pitch;
+				//printf("%lf\n", tmp2);
+				//if (tmp2>15||tmp2<-15)
+				//{
+				//	continue;
+				//}
+				//if (tmp2 <2 || tmp2>-2)
+				//	continue;
+				//if (Pitch < 0)
+				//	Pitch += 360;
+				//if (Yaw < 0)
+				//	Yaw += 360;
+
+				printf("%f\t%f\n", Pitch, Yaw);
+				ReadProcessMemory(hProcess, (LPVOID)(dwTmp + 0x64), &TempPitch, 4, NULL);
+				TempPitch %= 65536;
+				if (TempPitch < 0)
+					TempPitch += 65536;
+
+				GamePitch = (int)(Pitch * 65536 / 360);
+				GameYaw = (int)(Yaw * 65536 / 360);
+
+				GamePitch %= 65536;
+				GameYaw %= 65536;
+
+				if (GamePitch < 0)
+					GamePitch += 65536;
+				//int tmp = TempPitch - GamePitch;
+				//if (abs(tmp) > 2731)
+				//	continue;
+
+				if (GameYaw < 0)
+					GameYaw += 65536;
+
+				//printf("%d\n", TempPitch);
+
+				//printf("%d\t%d\n", GamePitch, GameYaw);
+				if (GamePitch != 0 && GameYaw != 0)
 				{
-					if (dwHp > 0 && dwHp < 101)
-					{
-						ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C4), &dwTmp, 4, NULL);
-						//Get my Position
-						ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTemp, 4, NULL);
-						ReadProcessMemory(hProcess, (LPCVOID)(dwTemp + 0x54), &MyPos, 12, NULL);
-
-						RePos.x = Pos.x - MyPos.x;
-						RePos.y = Pos.y - MyPos.y;
-						RePos.z = Pos.z - MyPos.z;
-
-						Pitch = atan2(RePos.y, RePos.x) * 180.f / PIE;
-						double tmp1 = pow(RePos.x, 2) + pow(RePos.y, 2);
-						Yaw = -atan2(-RePos.z, sqrt(tmp1)) * 180.f / PIE;
-
-						ReadProcessMemory(hProcess, (LPVOID)(dwTmp + 0x64), &TempPitch, 4, NULL);
-						//printf("%d\n", TempPitch);
-						double tmp2 = TempPitch * 360 / 65536 - Pitch;
-						printf("%lf\n", tmp2);
-						//if (tmp2>15||tmp2<-15)
-						//{
-						//	continue;
-						//}
-						//if (tmp2 <2 || tmp2>-2)
-						//	continue;
-						if (Pitch < 0)
-							Pitch += 360;
-						if (Yaw < 0)
-							Yaw += 360;
-
-						//printf("%f\t%f\n", Pitch, Yaw);
-
-						GamePitch = (DWORD)(Pitch * 65536 / 360);
-						GameYaw = (DWORD)(Yaw * 65536 / 360);
-
-						//printf("%d\t%d\n", GamePitch, GameYaw);
-						if (GamePitch != 0 && GameYaw != 0)
-						{
-							WriteProcessMemory(hProcess, (LPVOID)(dwTmp + 0x64), &GamePitch, 4, NULL);
-							WriteProcessMemory(hProcess, (LPVOID)(dwTmp + 0x60), &GameYaw, 4, NULL);
-						}
-					}
+					WriteProcessMemory(hProcess, (LPVOID)(dwTmp + 0x64), &GamePitch, 4, NULL);
+					WriteProcessMemory(hProcess, (LPVOID)(dwTmp + 0x60), &GameYaw, 4, NULL);
 				}
 			}
 		}
