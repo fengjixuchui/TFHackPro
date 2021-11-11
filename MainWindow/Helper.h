@@ -4,7 +4,7 @@
 #include"tlhelp32.h"
 #include"stdlib.h"
 #include"Psapi.h"
-
+#pragma warning(disable:4996)
 
 BOOL GetWndPid(LPCWSTR lpClassName, LPCWSTR lpWindowName, DWORD& dwPid);
 DWORD GetProcessIdByProcessName(const WCHAR ProcessName[MAX_PATH]);
@@ -13,26 +13,8 @@ BOOL RemoteThreadDllInject(const WCHAR*, const WCHAR*);
 BOOL FetchProcess();
 BOOL FetchProcessImageBase(DWORD dwPid);
 const WCHAR* GetFileFullPath(const WCHAR* FileName);
-void DebugMsg(const WCHAR* a, int b,int c);
-
-
-
 
 //////////////////////////////////////////
-
-
-BOOL MyLoadLibrary(const WCHAR DllName[MAX_PATH])
-{
-	typedef void (*func)(LPCWSTR);
-	HMODULE hDll = LoadLibrary(DllName);
-	if (hDll == NULL)
-	{
-		return FALSE;
-	}
-	func f = (func)GetProcAddress(hDll, "MyMessageBox");
-	f(L"CAONIMA");
-	return TRUE;
-}
 
 BOOL RemoteThreadDllInject(const WCHAR* ProcessName, const WCHAR* dllpath)
 {
@@ -98,6 +80,7 @@ BOOL RemoteThreadDllFree(const WCHAR* ProcessName, const WCHAR* dllName)
 	CloseHandle(hRemoteThread);
 	return TRUE;
 }
+
 
 DWORD GetProcessModuleBaseAddress(DWORD dwPid, const WCHAR ModuleName[MAX_MODULE_NAME32 + 1])
 {
@@ -219,20 +202,133 @@ const WCHAR* GetFileFullPath(const WCHAR * FileName)
 	return NULL;
 }
 
-
-
-void DebugMsg(const WCHAR* a, int b,int c)
-{
-	CString str;
-	str.Format(a, b,c);
-	AfxMessageBox(str);
-}
-
-void SetDebugConsole(PCWSTR ConsoleName)
+//FILE* stream;
+void SetDebugConsole()
 {
 	AllocConsole();
-	SetConsoleTitle(ConsoleName);
-	FILE* stream;
-	freopen_s(&stream, "CON", "w", stdout);
-	printf("ok\n");
+	SetConsoleTitle(L"Debug");
+
+	//freopen_s(&stream, "CON", "w", stdout);
+	//freopen_s(&stream, "CON", "r", stdin);
+	freopen("CON", "w", stdout);
+	freopen("CON", "r", stdin);
+	//printf("ok\n");
+}
+
+void FreeDebugConsole()
+{
+	fclose(stdin);
+	fclose(stdout);
+	FreeConsole();
+}
+
+DWORD GetMachineSerial()
+{
+	char     m_Volume[256];//卷标名  
+	char     m_FileSysName[256];
+	DWORD   m_SerialNum;//序列号  
+	DWORD   m_FileNameLength;
+	DWORD   m_FileSysFlag;
+	::GetVolumeInformationA("c:\\",
+		m_Volume,
+		256,
+		&m_SerialNum,
+		&m_FileNameLength,
+		&m_FileSysFlag,
+		m_FileSysName,
+		256);
+	m_SerialNum ^= 0xCDCDCDCD;
+	//printf("SerialNum = %x\n", m_SerialNum);
+	return m_SerialNum;
+}
+
+
+BOOL VerifyKey(DWORD Key)
+{
+	DWORD Serial = 0;
+	DWORD MyKey = 0;
+	DWORD Temp = 0;
+
+	Serial = GetMachineSerial();
+	Temp = *(BYTE*)((BYTE*)&Serial + 0) + *(BYTE*)((BYTE*)&Serial + 1) + *(BYTE*)((BYTE*)&Serial + 2) + *(BYTE*)((BYTE*)&Serial + 3);
+	Temp = ~Temp;
+	MyKey = Serial ^ Temp;
+	//printf("MyKey = %x\n", MyKey);
+	if (Key == MyKey)
+	{
+		printf("校验成功\n");
+		return TRUE;
+	}
+	else
+	{
+		printf("校验失败\n");
+		return FALSE;
+	}
+}
+
+
+bool WorldToScreen(Vec3 pos, Vec2& screen, float matrix[16], int windowWidth, int windowHeight)
+{
+	Vec4 clipCoords;
+
+	clipCoords.x = pos.x * matrix[0] + pos.y * matrix[4] + pos.z * matrix[8] + matrix[12];
+	clipCoords.y = pos.x * matrix[1] + pos.y * matrix[5] + pos.z * matrix[9] + matrix[13];
+	clipCoords.z = pos.x * matrix[2] + pos.y * matrix[6] + pos.z * matrix[10] + matrix[14];
+	clipCoords.w = pos.x * matrix[3] + pos.y * matrix[7] + pos.z * matrix[11] + matrix[15];
+
+	if (clipCoords.w < 0.1f)
+		return false;
+	Vec3 NDC;
+	NDC.x = clipCoords.x / clipCoords.w;
+	NDC.y = clipCoords.y / clipCoords.w;
+	NDC.z = clipCoords.z / clipCoords.w;
+
+	screen.x = (windowWidth / 2 * NDC.x) + (NDC.x + windowWidth / 2);
+	screen.y = -(windowHeight / 2 * NDC.y) + (NDC.y + windowHeight / 2);
+
+	return true;
+}
+
+
+BOOL GetWindowRealSize(HWND hWnd)
+{
+	while (1)
+	{
+		// 获取窗口当前显示的监视器
+		//HWND hWnd = GetDesktopWindow();//根据需要可以替换成自己程序的句柄 
+		HMONITOR hMonitor = MonitorFromWindow(hWnd, MONITOR_DEFAULTTONEAREST);
+
+		// 获取监视器逻辑宽度与高度
+		MONITORINFOEX miex;
+		miex.cbSize = sizeof(miex);
+		GetMonitorInfo(hMonitor, &miex);
+		int cxLogical = (miex.rcMonitor.right - miex.rcMonitor.left);
+		int cyLogical = (miex.rcMonitor.bottom - miex.rcMonitor.top);
+
+		// 获取监视器物理宽度与高度
+		DEVMODE dm;
+		dm.dmSize = sizeof(dm);
+		dm.dmDriverExtra = 0;
+		EnumDisplaySettings(miex.szDevice, ENUM_CURRENT_SETTINGS, &dm);
+		int cxPhysical = dm.dmPelsWidth;
+		int cyPhysical = dm.dmPelsHeight;
+
+		//缩放比例计算
+		double horzScale = ((double)cxPhysical / (double)cxLogical);
+		double vertScale = ((double)cyPhysical / (double)cyLogical);
+
+		RECT RectTmp;
+		GetWindowRect(hWnd, &RectTmp);
+		DWORD W = (DWORD)((RectTmp.right - RectTmp.left) * horzScale);
+		DWORD H = (DWORD)((RectTmp.bottom - RectTmp.top) * vertScale);
+		if (W != WIDTH || H != HEIGHT)
+		{
+			WIDTH = W;
+			HEIGHT = H;
+		}
+
+		if (!WIDTH || !HEIGHT)
+			return FALSE;
+	}
+	return TRUE;
 }
